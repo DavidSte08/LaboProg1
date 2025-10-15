@@ -10,11 +10,12 @@ public class Main {
         System.out.println("Il punto 1 si trova nel quadrante "+ punto1.determinaQuadrante());
         System.out.println("Il punto 2 si trova nel quadrante "+ punto2.determinaQuadrante());
         System.out.println("Il punto 3 si trova nel quadrante "+ punto3.determinaQuadrante());
-
+        System.out.println("");
 
         System.out.println("Distanza dal centro del punto 1: " + punto1.distanzaCentro());
         System.out.println("Distanza dal centro del punto 2: " + punto2.distanzaCentro());
         System.out.println("Distanza dal centro del punto 3: " + punto3.distanzaCentro());
+        System.out.println("");
 
         System.out.println(punto1.toString());
         System.out.println(punto2.toString());

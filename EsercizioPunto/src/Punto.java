@@ -14,7 +14,7 @@ public class Punto {
     }
 
     public double distanzaCentro(){
-        double distanza = Math.sqrt((x*x+y*y));
+        double distanza = Math.sqrt((x*x + y*y));
         int distanzaInt = (int) distanza;
         return distanzaInt;
     }
