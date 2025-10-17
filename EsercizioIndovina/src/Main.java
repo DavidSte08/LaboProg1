@@ -13,7 +13,9 @@ public class Main {
 
         System.out.print("Inserisci un numero: ");
         numero = input.nextInt();
+
             while(true) {
+
             if (numero == numeroGenerato) {
                 conta = conta + 1;
                 System.out.println("Numero indovinato al " + conta + " tentativo");
