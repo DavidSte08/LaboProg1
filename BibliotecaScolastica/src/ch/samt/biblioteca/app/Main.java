@@ -22,7 +22,7 @@ public class Main {
         System.out.println(biblioteca.aggiungiItem(Libro2));
         System.out.println(biblioteca.aggiungiItem(Dvd1));
 
-        System.out.println(biblioteca.toString());
+        System.out.println(biblioteca);
 
     }
 }
