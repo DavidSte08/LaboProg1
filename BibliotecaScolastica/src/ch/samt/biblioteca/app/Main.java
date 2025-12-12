@@ -11,7 +11,7 @@ import java.util.HashSet;
 public class Main {
     public static void main(String[] args) {
 
-        Biblioteca biblioteca = new Biblioteca(new ArrayList<>(), HashSet.newHashSet(10), HashMap.newHashMap(5));
+        Biblioteca biblioteca = new Biblioteca("Biblioteca1");
 
         Libro Libro1 = new Libro("L1","Libro111",2025,"1","Jon",99);
         Libro Libro2 = new Libro("L2","Libro222",2020,"2","Jon",99);
@@ -23,7 +23,6 @@ public class Main {
         System.out.println(biblioteca.aggiungiItem(Dvd1));
 
         System.out.println(biblioteca.toString());
-
 
     }
 }

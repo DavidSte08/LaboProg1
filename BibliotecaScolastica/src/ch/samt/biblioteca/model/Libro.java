@@ -10,6 +10,10 @@ public class Libro extends ItemBiblioteca {
         this.numeroPagine = numeroPagine;
     }
 
+    public String getAutore() {
+        return autore;
+    }
+
     @Override
     public String toString() {
         return "Libro{" +
