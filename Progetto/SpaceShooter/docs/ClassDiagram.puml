@@ -1,0 +1,289 @@
+@startuml SpaceShooter_ClassDiagram
+
+title Space Shooter — Class Diagram\nDavid Stefanovic — I2BD — SAMT 2025/2026
+
+skinparam classBackgroundColor #0D1B2A
+skinparam classBorderColor #2E6DB4
+skinparam classFontColor #FFFFFF
+skinparam classHeaderBackgroundColor #1A3A6B
+skinparam arrowColor #5BA3E0
+skinparam backgroundColor #050A10
+skinparam classFontSize 13
+
+' ── ABSTRACT BASE ─────────────────────────────────────────────────────
+abstract class GameObject {
+  #float x, y
+  #float width, height
+  #Texture texture
+  #boolean alive
+  --
+  +{abstract} void update(float delta)
+  +void draw(SpriteBatch batch)
+  +Rectangle getBounds()
+  +void dispose()
+}
+
+' ── PLAYER ────────────────────────────────────────────────────────────
+class Player {
+  -float speed
+  -int lives
+  -int score
+  -float shootTimer
+  -float invTimer
+  -float doubleShotTimer
+  -float slowTimer
+  -boolean hasPendingSpeed
+  -boolean hasPendingSlow
+  --
+  +void update(float delta)
+  +void shoot()
+  +boolean takeDamage()
+  +void addLife()
+  +void addScore(int points)
+  +void collectSpeed()
+  +void collectSlow()
+  +void activatePendingSpeed()
+  +void activatePendingSlow()
+  +int getLives()
+  +int getScore()
+  +boolean isDoubleShotActive()
+  +boolean isSlowActive()
+}
+
+' ── ENEMY ABSTRACT ────────────────────────────────────────────────────
+abstract class Enemy {
+  #int health
+  #int points
+  #float shootTimer
+  #float shootInterval
+  #float slowMult
+  #List<Bullet> bullets
+  --
+  +void update(float delta)
+  +{abstract} void move(float delta)
+  +{abstract} void shoot()
+  +void takeDamage(int dmg)
+  +void setSlowMult(float m)
+  +int getHealth()
+  +int getPoints()
+}
+
+' ── ENEMY TYPES ───────────────────────────────────────────────────────
+class EnemyBasic {
+  -float startX
+  -float timeAccum
+  -float tintR, tintG, tintB
+  --
+  +void move(float delta)
+  +void shoot()
+  +void draw(SpriteBatch batch)
+}
+
+class EnemyZigzag {
+  -float dirX
+  --
+  +void move(float delta)
+  +void shoot()
+  +void draw(SpriteBatch batch)
+}
+
+class EnemySweeper {
+  --
+  +void move(float delta)
+  +void shoot()
+  +void draw(SpriteBatch batch)
+}
+
+class EnemyDiver {
+  -Phase phase
+  -float hoverY
+  -float hoverTimer
+  -float targetX
+  -float diveVX, diveVY
+  --
+  +void update(float delta)
+  +void move(float delta)
+  +void shoot()
+  +void setTargetX(float px)
+  +boolean isDiving()
+}
+
+class EnemyBoss {
+  -int phase
+  -float speed
+  -int maxHealth
+  --
+  +void update(float delta)
+  +void move(float delta)
+  +void shoot()
+  +int getPhase()
+  +int getMaxHealth()
+}
+
+' ── POWERUP ───────────────────────────────────────────────────────────
+class PowerUp {
+  -Type type
+  --
+  +void update(float delta)
+  +void apply(Player player)
+  +Type getType()
+}
+
+enum "PowerUp.Type" as PUType {
+  LIFE
+  SPEED
+  SLOW
+}
+
+' ── BULLET ────────────────────────────────────────────────────────────
+class Bullet {
+  -float vx, vy
+  -{static} Texture texPlayer
+  -{static} Texture texEnemy
+  --
+  +void update(float delta)
+  +void draw(SpriteBatch batch)
+  +{static} void loadTextures()
+  +{static} void disposeTextures()
+  +boolean isAlive()
+}
+
+' ── SCREENS ───────────────────────────────────────────────────────────
+interface Screen <<LibGDX>>
+
+class GameScreen {
+  +{static} float W, H
+  -Player player
+  -List<Enemy> enemies
+  -List<PowerUp> powerUps
+  -List<Bullet> orphanBullets
+  -WaveManager waveManager
+  -int comboCount
+  --
+  +void render(float delta)
+  -void update(float delta)
+  -void drawHUD()
+  -void drawLives()
+  -void drawBossBar()
+  -void drawWaveBanner(float delta)
+  -void maybeSpawnPowerUp(float x, float y)
+}
+
+class MenuScreen {
+  -BitmapFont fSpace, fShooter, fBtn
+  -Texture[] texBtns
+  -int sel
+  --
+  +void render(float delta)
+  -void drawTitle()
+  -void drawButtons()
+  -void drawRecord()
+}
+
+class PauseScreen {
+  -Screen gameScreen
+  --
+  +void render(float delta)
+  -void resumeGame()
+}
+
+class HowToPlayScreen {
+  -int page
+  -String[][][] PAGES_CONTENT
+  --
+  +void render(float delta)
+  -void drawContent()
+  -void drawNavigation()
+}
+
+' ── UTILS ─────────────────────────────────────────────────────────────
+class AudioManager {
+  -Music musicMenu, musicGame, musicBoss
+  -Sound sfxExplosion, sfxDamage, ...
+  --
+  +void playMenuMusic()
+  +void switchToBossMusic()
+  +void switchToGameMusic()
+  +void pauseMusic()
+  +void resumeMusic()
+  +void playExplosion()
+  +void playHit()
+  +void playDeath()
+  +void playVictory()
+  +void playWave()
+}
+
+class ScoreManager {
+  -int highScore
+  -{static} String FILE
+  --
+  +int getHighScore()
+  +void submitScore(int score)
+  -void load()
+  -void save()
+}
+
+class WaveManager {
+  -int currentWave
+  -boolean bossWave
+  -float playerX
+  --
+  +List<Enemy> nextWave()
+  +void setPlayerX(float px)
+  +int getCurrentWave()
+  +boolean isBossWave()
+  -void buildLine(List, float)
+  -void buildV(List, float)
+  -void buildPincer(List, float)
+  -void buildSnake(List, float)
+  -void buildGrid(List, float)
+  -void buildMixed(List, float)
+}
+
+class Main {
+  +SpriteBatch batch
+  +AudioManager audioManager
+  +ScoreManager scoreManager
+  --
+  +void create()
+  +void dispose()
+}
+
+' ── EREDITARIETÀ ──────────────────────────────────────────────────────
+GameObject <|-- Player
+GameObject <|-- Enemy
+GameObject <|-- PowerUp
+GameObject <|-- Bullet
+
+Enemy <|-- EnemyBasic
+Enemy <|-- EnemyZigzag
+Enemy <|-- EnemySweeper
+Enemy <|-- EnemyDiver
+Enemy <|-- EnemyBoss
+
+Screen <|.. GameScreen
+Screen <|.. MenuScreen
+Screen <|.. PauseScreen
+Screen <|.. HowToPlayScreen
+
+' ── RELAZIONI ─────────────────────────────────────────────────────────
+PowerUp ..> Player : apply()
+PowerUp +-- PUType
+
+Main "1" *-- "1" AudioManager
+Main "1" *-- "1" ScoreManager
+
+GameScreen "1" *-- "1" Player
+GameScreen "1" *-- "*" Enemy
+GameScreen "1" *-- "*" PowerUp
+GameScreen "1" *-- "*" Bullet : orphans
+GameScreen "1" *-- "1" WaveManager
+
+WaveManager ..> Enemy : creates
+
+PauseScreen --> GameScreen : restores
+
+Player "1" *-- "*" Bullet : shoots
+Enemy "1" *-- "*" Bullet : shoots
+
+@enduml
